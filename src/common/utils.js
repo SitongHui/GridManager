@@ -88,7 +88,7 @@ export const getObjectIndexToArray = (arr, obj, key) => {
 };
 
 /**
- * clone 对象, 对 JSON.stringify 存在丢失的类型(如function)不作处理。因为GM中不存在这种情况
+ * cloneObject 对象, 对 JSON.stringify 存在丢失的类型(如function)不作处理。因为GM中不存在这种情况
  * @param o
  * @returns {any}
  */

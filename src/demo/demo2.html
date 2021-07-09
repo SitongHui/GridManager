@@ -191,12 +191,12 @@
 
             for (let i = 1; i<= num; i++) {
                 child = [];
-                for (let j = 1; j<= 40; j++) {
+                for (let j = 1; j<= 4; j++) {
                     child.push({
                         "id": parseInt((i.toString() + j.toString()), 10),
                         "name": `baukh-${i}-${j}`,
                         "age": "28",
-                        "createDate": "2015-03-12",
+                        "createDate": j % 2 === 0 && i % 2 === 0 ? Date.now() : "2015-03-12" ,
                         "info": "野生前端程序"
                     });
                 }
@@ -204,7 +204,7 @@
                     "id": i,
                     "name": `baukh-${i}`,
                     "age": "28",
-                    "createDate": "2015-03-12",
+                    "createDate": i % 2 === 0 && i % 2 === 0 ? Date.now() : "2015-03-12",
                     "info": "野生前端程序",
                     "children": child
                 });
@@ -213,7 +213,7 @@
 		    return data;
         };
 		var ajaxData2 = {
-			"data": getData(4),
+			"data": getData(20),
 			"totals": 2
 		};
 	</script>
@@ -246,7 +246,14 @@
                     openState: false,
                     treeKey: 'children'
                 },
-				ajaxData: ajaxData1,
+				ajaxData: () => {
+                    return new Promise(resolve => {
+                        resolve({
+                            "data": getData(20),
+                            "totals": 2
+                        });
+                    })
+                },
                 // useRadio: true,
 				pageSize: 20,
 				query: {ex: '用户自定义的查询参数,格式:{key:value}'},

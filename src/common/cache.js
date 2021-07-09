@@ -4,7 +4,7 @@
 * 1.Store: 渲染表格时所使用的json数据 [存储在GM实例]
 * 2.UserMemory: 用户记忆 [存储在localStorage]
 * */
-import {getCloneRowData, getFakeTh, getTable, getTh} from '@common/base';
+import { getCloneRowData, getFakeTh, getTable, getTh } from '@common/base';
 import {
     isUndefined,
     isFunction,
@@ -113,8 +113,9 @@ export const getRowData = (_, target, useSourceData) => {
  * @param _
  * @param key: 列数据的主键
  * @param rowDataList: 需要更新的数据列表
- * @returns tableData: 更新后的表格数据
+ * @returns {tableData, updateCacheList}: 完整表格数据 和 需要更新的表格数据
  */
+// todo setTableData改造后，这个函数就没有用了，需要替换
 export const updateRowData = (_, key, rowDataList) => {
     const tableData = getTableData(_);
     const settings = getSettings(_);
@@ -163,10 +164,43 @@ export const getTableData = _ => {
 /**
  * 存储表格数据
  * @param _
- * @param data
+ * @param newTableData
  */
-export const setTableData = (_, data) => {
-    store.responseData[_] = data;
+export const setTableData = (_, newTableData) => {
+    const tableData = store.responseData[_] || [];
+    const differenceList = cloneObject(newTableData);
+    const settings = getSettings(_);
+    const { supportTreeData, treeConfig } = settings;
+    const { treeKey } = treeConfig;
+
+    // 循环比对时，在旧数据与新数据间取长度较大的值为循环对象，以确保可以对所有值进行比对
+    const difference = (newList, oldList) => {
+        each(newList, (newRow, index) => {
+            const oldRow = oldList[index] || {};
+
+            // 验证两个对像是否存在差异: 不存在差异的值为 empty，并在后续的DOM操作中跳过当前索引
+            if (equal(oldRow, newRow)) {
+                delete newList[index];
+            }
+
+            // 树型数据
+            if (supportTreeData && newRow[treeKey]) {
+                difference(newRow[treeKey], oldRow[treeKey] || []);
+            }
+        });
+
+    };
+    difference(differenceList, tableData);
+    console.log(differenceList);
+    differenceList.forEach(item => {
+        console.log(typeof item);
+    });
+    // if (differenceList.every(item => !item)) {
+    //     console.info('数据变更了', differenceList);
+    // } else {
+    //     console.info('数据未变化');
+    // }
+    store.responseData[_] = newTableData;
 };
 
 /**
