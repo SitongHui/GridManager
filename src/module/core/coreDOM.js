@@ -37,7 +37,7 @@ import { sendCompile, compileTd } from '@common/framework';
  */
 class Dom {
     init($table, settings) {
-        const { _, width, height, supportAjaxPage, useWordBreak } = settings;
+        const { _, useWordBreak } = settings;
         // add wrap div
         $table.wrap(render.createWrapTpl({ settings }), '.table-div');
 
@@ -45,7 +45,7 @@ class Dom {
         $table.append(render.createTheadTpl({settings}));
 
         // 计算布局
-        calcLayout(_, width, height, supportAjaxPage);
+        calcLayout(settings);
 
         // append tbody
         const tbody = document.createElement('tbody');
@@ -185,8 +185,9 @@ class Dom {
                 const alignAttr = col.align ? `align=${col.align}` : '';
                 const moveRowAttr = supportMoveRow ? moveRow.addSign(col) : '';
                 const useRowCheckAttr = supportCheckbox ? checkbox.addSign(col) : '';
+                const fixedAttr = col.fixed ? `fixed=${col.fixed}` : '';
                 text = isElement(text) ? text.outerHTML : text;
-                tdList.push(`<td ${compileAttr} ${alignAttr} ${moveRowAttr} ${useRowCheckAttr}>${text}</td>`);
+                tdList.push(`<td ${compileAttr} ${alignAttr} ${moveRowAttr} ${useRowCheckAttr} ${fixedAttr}>${text}</td>`);
             });
         };
 
